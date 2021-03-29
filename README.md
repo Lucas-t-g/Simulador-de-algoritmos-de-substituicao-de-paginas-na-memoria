@@ -1,0 +1,1 @@
+# Simulador-de-algoritmos-de-substituicao-de-paginas-na-memoria
