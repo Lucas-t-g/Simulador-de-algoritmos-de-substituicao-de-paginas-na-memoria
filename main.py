@@ -1,7 +1,9 @@
 import argparse
+import sys
 
 class Manager:
     def __init__(self, input):
+        input = input.replace("\n", "")
         input = input.split('|')
         self.n_frames = int(input[0])
         self.frames = [False]*self.n_frames
@@ -25,21 +27,21 @@ class Manager:
         print("Frames:", self.frames)
 
     def output(self):
-        # print(Número de trocas de página no algoritmo FIFO|Número de trocas de página no algoritmo MRU|Número de trocas de página no algoritmo NUF|Número de trocas de página no algoritmo ótimo|nome do algoritmo com desempenho mais próximo do ótimo)
-        
+        # print(Número de trocas de página no algoritmo FIFO|Número de trocas de página no algoritmo MRU|Número de trocas de página no algoritmo NUF|Número de trocas de página no algoritmo ótimo|nome do algoritmo com desempenho mais próximo do ótimo)        
         self.optimal_algorithm()
         self.FIFO_algorithm()
         self.MRU_algorithm()
         self.NUF_algorithm()
         # print(self.algorithms_page_exchange)
-        better = sorted(self.algorithms_page_exchange, key=lambda key: self.algorithms_page_exchange[key])
-        # print(better)
-        better.remove('OPTIMAL')
-        # print(better)
-        better = better[0]
-        # print("better: ", better)
-        # print('FIFO|MRU|NUF|OPTIMAL')
-        print("{}|{}|{}|{}|{}|{}".format(self.algorithms_page_exchange['FIFO'], self.algorithms_page_exchange['MRU'], self.algorithms_page_exchange['NUF'], self.algorithms_page_exchange['OPTIMAL'], self.algorithms_page_exchange[better], better))
+        APE_aux = self.algorithms_page_exchange.copy()
+        APE_aux.pop('OPTIMAL')
+        # encontra o menor valor 
+        better = min(APE_aux, key=lambda key: APE_aux[key])
+        # testa quantos valores tem o mesmo valor do melhor
+        test = [APE_aux[key] == APE_aux[better] for key in APE_aux.keys()]
+        if test.count(True) > 1: better = "empate"
+        
+        print("\n{:>4}|{:>4}|{:>4}|{:>4}|{:>4}".format(self.algorithms_page_exchange['FIFO'], self.algorithms_page_exchange['MRU'], self.algorithms_page_exchange['NUF'], self.algorithms_page_exchange['OPTIMAL'], better), end='')
 
     def is_this_page_in_frames(self, page):
         # checando se a pagina ja está em alguma moldura
@@ -51,7 +53,7 @@ class Manager:
     def NUF_algorithm_inside_part(self, page):
         # ver se a pagina ja está em alguma moldura
         if self.is_this_page_in_frames(page):
-            self.NUF_aux[self.frames.index(page)] += 1
+            self.NUF_aux[self.frames.index(page)] += 1 # adicona um acesso
             return
         else:
             # ver se tem alguma moldura vazia
@@ -61,13 +63,26 @@ class Manager:
                     self.frames[i] = page
                     self.NUF_aux[i] = 1
                     return
-            
+
             # ver qual página tem a menor frequencia de uso
             index = self.NUF_aux.index(min(self.NUF_aux))
             # print("index: ", index)
             self.frames[index] = page
             self.NUF_aux[index] = 1
-            
+                        
+            # # ver qual página tem a menor frequencia de uso
+            # min_aux = min(self.NUF_aux)
+            # indexes = []
+            # for i, elem in enumerate(self.NUF_aux):
+            #     if elem == min_aux:
+            #         indexes.insert(0, i)
+            #         # indexes.append(i)
+            # # print(self.NUF_aux)
+            # # print(indexes)
+            # index = indexes[0]
+            # # print("index: ", index)
+            # self.frames[index] = page
+            # self.NUF_aux[index] = 0
 
     def NUF_algorithm(self):
         self.reset()
@@ -75,14 +90,15 @@ class Manager:
         i = 0
         while len(self.sequential_page_accesses) > 0:
             page = self.sequential_page_accesses.pop(0)
-            # print("page: ",page)
             self.NUF_algorithm_inside_part(page)
-
-            # print("frames: ", self.frames)
-            # print("FIFO  : ", self.NUF_aux)
+            # print("page: ", page)
+            # print("Frames:", self.frames)
+            # print("NUF_aux:", self.NUF_aux)
             # print()
-            if i % self.n_frames == 0:
-                for j in range(self.n_frames): self.NUF_aux[j] = int(self.NUF_aux[j]/2)
+
+            # # sistema simples de envelhecimento
+            # if i % self.n_frames == 0:
+            #     for j in range(self.n_frames): self.NUF_aux[j] = int(self.NUF_aux[j]/2)
             i += 1
         # print("Número de trocas de paginas: ", self.algorithms_page_exchange['NUF'])
 
@@ -194,14 +210,15 @@ class Manager:
 
 def main():
     arq = open(path, "r").readlines()
+    print('FIFO| MRU| NUF|OPTIMAL', end='')
     for i, line in enumerate(arq):
-        print("\nlinha:", i)
+        # print("\nlinha:", i)
         manager = Manager(line)
         manager.output()
 
 if __name__ == '__main__':
     # aqui são definidos as configurações que se recebe por argumento quando executa o código.
-    print("em caso de duvidas, execute com 'python3 main.py -h'")
+    print("em caso de duvidas, execute com 'python3 main.py -h'", file=sys.stderr)
     parser = argparse.ArgumentParser(description = "Simulador de algoritmos de substituição de páginas na memória {:>>11} by: Lucas T. G.".format(''))
     parser.add_argument('--arquivo', '-a', action = 'store', dest = 'path', 
                     required=True, help = "Arquivo e/ou diretorio com os dados de entrada(este argumento é necessário).")

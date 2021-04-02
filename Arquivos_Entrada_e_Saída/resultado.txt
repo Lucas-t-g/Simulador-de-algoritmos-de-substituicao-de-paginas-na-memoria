@@ -1,0 +1,20 @@
+FIFO| MRU| NUF|OPTIMAL
+  12|  12|  10|   9|OPTIMAL
+  12|  12|  11|   9|OPTIMAL
+  15|  15|  14|  11|OPTIMAL
+   8|   8|   8|   8|empate
+  56|  59|  56|  41|OPTIMAL
+  19|  19|  21|  17|OPTIMAL
+  23|  23|  24|  21|OPTIMAL
+  44|  44|  49|  31|OPTIMAL
+  43|  40|  41|  29|OPTIMAL
+  61|  63|  59|  38|OPTIMAL
+  44|  49|  54|  31|OPTIMAL
+  58|  58|  58|  58|empate
+ 101| 101| 100|  78|OPTIMAL
+  38|  39|  39|  28|OPTIMAL
+  21|  18|  18|  17|OPTIMAL
+  43|  46|  42|  30|OPTIMAL
+  96|  95| 102|  69|OPTIMAL
+  36|  39|  37|  26|OPTIMAL
+  27|  27|  28|  21|OPTIMAL
